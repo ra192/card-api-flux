@@ -20,7 +20,7 @@ public class CardApiFlux {
         return route()
                 .GET("/api/customer/get/{id}", accept(MediaType.APPLICATION_JSON), customerHandler::getById)
                 .POST("/api/customer/register", accept(MediaType.APPLICATION_JSON), customerHandler::register)
-                .POST("/api/card/create/virtual", accept(MediaType.APPLICATION_JSON), cardHandler::createVirtual)
+                .POST("/api/card/issue/virtual", accept(MediaType.APPLICATION_JSON), cardHandler::createVirtual)
                 .POST("/api/card/deposit", accept(MediaType.APPLICATION_JSON), cardHandler::deposit)
                 .POST("/api/card/withdraw", accept(MediaType.APPLICATION_JSON), cardHandler::withdraw)
                 .build();

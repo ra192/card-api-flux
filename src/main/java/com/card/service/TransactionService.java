@@ -36,7 +36,7 @@ public class TransactionService {
     }
 
     public Mono<TransactionResultDto> withdraw(Long accountId, Long amount, TransactionType type, String orderId, Long cardId) {
-        return transactionItemRepository.sumByAccount(accountId).flatMap(sum -> {
+        return transactionItemRepository.sumByAccount(accountId).defaultIfEmpty(0L).flatMap(sum -> {
             if (sum - amount < 0) {
                 final var errorText = "Account does not have enough funds";
                 logger.error(errorText);

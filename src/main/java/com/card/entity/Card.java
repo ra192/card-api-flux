@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 public class Card {
@@ -17,7 +18,7 @@ public class Card {
     private Long customerId;
     @Column("account_id")
     private Long accountId;
-    private LocalDate created;
+    private LocalDateTime created;
     private String info;
 
     public Card(String providerReferenceId, CardType type, Long customerId, Long accountId, String info) {
@@ -25,7 +26,7 @@ public class Card {
         this.type = type;
         this.customerId = customerId;
         this.accountId = accountId;
-        this.created = LocalDate.now();
+        this.created = LocalDateTime.now();
         this.info = info;
     }
 
@@ -69,11 +70,11 @@ public class Card {
         this.accountId = accountId;
     }
 
-    public LocalDate getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDate created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
