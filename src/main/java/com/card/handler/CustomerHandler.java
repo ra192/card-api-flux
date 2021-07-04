@@ -28,6 +28,7 @@ public class CustomerHandler {
     public Mono<ServerResponse> register(ServerRequest request) {
         return request.bodyToMono(CreateCustomerDto.class).flatMap(customerService::create).flatMap(res ->
                 ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
-                .onErrorResume(e->ok().contentType(MediaType.APPLICATION_JSON).bodyValue(e.getMessage()));
+                .onErrorResume(e->ok().contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ErrorResponse(e.getMessage())));
     }
 }
