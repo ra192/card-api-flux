@@ -10,7 +10,6 @@ import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
 import com.card.service.dto.TransactionResultDto;
 import com.card.service.exception.TransactionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -20,7 +19,6 @@ public class TransactionService {
     private final TransactionItemRepository transactionItemRepository;
     private final TransactionFeeRepository transactionFeeRepository;
 
-    @Autowired
     public TransactionService(TransactionRepository transactionRepository,
                               TransactionItemRepository transactionItemRepository,
                               TransactionFeeRepository transactionFeeRepository) {

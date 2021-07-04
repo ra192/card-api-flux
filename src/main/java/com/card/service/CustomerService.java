@@ -5,7 +5,6 @@ import com.card.repository.CustomerRepository;
 import com.card.service.dto.CreateCustomerDto;
 import com.card.service.exception.CustomerException;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -13,7 +12,6 @@ import reactor.core.publisher.Mono;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
-    @Autowired
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
@@ -30,5 +28,9 @@ public class CustomerService {
                     }
 
         });
+    }
+
+    public Mono<Customer>getById(Long id) {
+        return customerRepository.findById(id);
     }
 }
