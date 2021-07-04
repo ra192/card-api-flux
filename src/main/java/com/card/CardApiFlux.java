@@ -29,5 +29,4 @@ public class CardApiFlux {
     public static void main(String[] args) {
         SpringApplication.run(CardApiFlux.class, args);
     }
-
 }

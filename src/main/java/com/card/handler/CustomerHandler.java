@@ -20,8 +20,8 @@ public class CustomerHandler {
 
     public Mono<ServerResponse> getById(ServerRequest request) {
         final var id = Long.parseLong(request.pathVariable("id"));
-        return customerService.getById(id).flatMap(customer ->
-                ok().contentType(MediaType.APPLICATION_JSON).bodyValue(customer))
+        return customerService.getById(id).flatMap(res ->
+                ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
 
