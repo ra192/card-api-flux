@@ -120,4 +120,23 @@ public class CreateCustomerDto {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
+
+    @Override
+    public String toString() {
+        return "CreateCustomerDto{" +
+                "phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", active=" + active +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", merchantId=" + merchantId +
+                ", birthDate=" + birthDate +
+                ", address='" + address + '\'' +
+                ", address2='" + address2 + '\'' +
+                ", city='" + city + '\'' +
+                ", stateRegion='" + stateRegion + '\'' +
+                ", country='" + country + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                '}';
+    }
 }

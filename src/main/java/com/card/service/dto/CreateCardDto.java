@@ -19,4 +19,12 @@ public class CreateCardDto {
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
     }
+
+    @Override
+    public String toString() {
+        return "CreateCardDto{" +
+                "customerId=" + customerId +
+                ", accountId=" + accountId +
+                '}';
+    }
 }
