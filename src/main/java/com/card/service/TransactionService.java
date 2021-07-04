@@ -10,11 +10,15 @@ import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
 import com.card.service.dto.TransactionResultDto;
 import com.card.service.exception.TransactionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 public class TransactionService {
+    private static final Logger logger= LoggerFactory.getLogger(TransactionService.class);
+
     private final TransactionRepository transactionRepository;
     private final TransactionItemRepository transactionItemRepository;
     private final TransactionFeeRepository transactionFeeRepository;
@@ -32,9 +36,14 @@ public class TransactionService {
     }
 
     public Mono<TransactionResultDto> withdraw(Long accountId, Long amount, TransactionType type, String orderId, Long cardId) {
-        return transactionItemRepository.sumByAccount(accountId).flatMap(sum -> (sum - amount < 0) ?
-                Mono.error(new TransactionException("Account does not have enough funds")) :
-                createTransactionWithItems(accountId, -amount, type, TransactionItemType.WITHDRAW, orderId, cardId));
+        return transactionItemRepository.sumByAccount(accountId).flatMap(sum -> {
+            if (sum - amount < 0) {
+                final var errorText = "Account does not have enough funds";
+                logger.error(errorText);
+                return Mono.error(new TransactionException(errorText));
+            }
+            return createTransactionWithItems(accountId, -amount, type, TransactionItemType.WITHDRAW, orderId, cardId);
+        });
     }
 
     private Mono<TransactionResultDto> createTransactionWithItems(Long accountId, Long amount, TransactionType type, TransactionItemType baseItemType, String orderId, Long cardId) {

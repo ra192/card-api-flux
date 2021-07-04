@@ -23,20 +23,23 @@ public class CustomerService {
         logger.info("Create customer method was called with args:");
         logger.info(customerDto.toString());
 
-        return customerRepository.findByPhoneAndMerchantId(customerDto.getPhone(),customerDto.getMerchantId())
-                .hasElement().flatMap(exist->{
-                    if(exist) return Mono.error(new CustomerException("Customer already exists"));
-                    else {
+        return customerRepository.findByPhoneAndMerchantId(customerDto.getPhone(), customerDto.getMerchantId())
+                .hasElement().flatMap(exist -> {
+                    if (exist) {
+                        final var errorText = "Customer already exists";
+                        logger.error(errorText);
+                        return Mono.error(new CustomerException(errorText));
+                    } else {
                         final var customer = new Customer();
                         BeanUtils.copyProperties(customerDto, customer);
                         customer.setActive(true);
                         return customerRepository.save(customer);
                     }
 
-        });
+                });
     }
 
-    public Mono<Customer>getById(Long id) {
+    public Mono<Customer> getById(Long id) {
         return customerRepository.findById(id);
     }
 }

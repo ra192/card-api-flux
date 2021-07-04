@@ -26,7 +26,8 @@ public class CardHandler {
 
     public Mono<ServerResponse>deposit(ServerRequest request) {
         return request.bodyToMono(CreateCardTransactionDto.class).flatMap(cardService::deposit)
-                .flatMap(res->ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res));
+                .flatMap(res->ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
+                .onErrorResume(e->ok().contentType(MediaType.APPLICATION_JSON).bodyValue(e.getMessage()));
     }
 
     public Mono<ServerResponse>withdraw(ServerRequest request) {
