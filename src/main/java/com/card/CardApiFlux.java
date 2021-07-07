@@ -18,9 +18,9 @@ public class CardApiFlux {
     @Bean
     RouterFunction<ServerResponse> router(CustomerHandler customerHandler, CardHandler cardHandler) {
         return route()
-                .GET("/api/customer/get/{id}", accept(MediaType.APPLICATION_JSON), customerHandler::getById)
-                .POST("/api/customer/register", accept(MediaType.APPLICATION_JSON), customerHandler::register)
-                .POST("/api/card/issue/virtual", accept(MediaType.APPLICATION_JSON), cardHandler::createVirtual)
+                .GET("/api/customer/{id}", accept(MediaType.APPLICATION_JSON), customerHandler::getById)
+                .POST("/api/customer", accept(MediaType.APPLICATION_JSON), customerHandler::create)
+                .POST("/api/card", accept(MediaType.APPLICATION_JSON), cardHandler::createVirtual)
                 .POST("/api/card/deposit", accept(MediaType.APPLICATION_JSON), cardHandler::deposit)
                 .POST("/api/card/withdraw", accept(MediaType.APPLICATION_JSON), cardHandler::withdraw)
                 .build();

@@ -21,7 +21,7 @@ public class Card {
     private LocalDateTime created;
     private String info;
 
-    public Card(String providerReferenceId, CardType type, Long customerId, Long accountId, String info) {
+    public Card(CardType type, Long customerId, Long accountId) {
         this.providerReferenceId = providerReferenceId;
         this.type = type;
         this.customerId = customerId;

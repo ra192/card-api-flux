@@ -1,4 +1,4 @@
-package com.card.service.dto;
+package com.card.dto;
 
 import com.card.entity.Transaction;
 import com.card.entity.TransactionItem;

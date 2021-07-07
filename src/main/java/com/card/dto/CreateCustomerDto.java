@@ -1,11 +1,10 @@
-package com.card.service.dto;
+package com.card.dto;
 
 import java.time.LocalDate;
 
 public class CreateCustomerDto {
     private String phone;
     private String email;
-    private Boolean active;
     private String firstName;
     private String lastName;
     private Long merchantId;
@@ -31,14 +30,6 @@ public class CreateCustomerDto {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
     }
 
     public String getFirstName() {
@@ -126,7 +117,6 @@ public class CreateCustomerDto {
         return "CreateCustomerDto{" +
                 "phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", active=" + active +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", merchantId=" + merchantId +

@@ -8,7 +8,7 @@ import com.card.entity.enums.TransactionType;
 import com.card.repository.TransactionFeeRepository;
 import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
-import com.card.service.dto.TransactionResultDto;
+import com.card.dto.TransactionResultDto;
 import com.card.service.exception.TransactionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

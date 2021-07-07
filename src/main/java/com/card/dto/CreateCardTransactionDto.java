@@ -1,4 +1,4 @@
-package com.card.service.dto;
+package com.card.dto;
 
 public class CreateCardTransactionDto {
     private Long cardId;

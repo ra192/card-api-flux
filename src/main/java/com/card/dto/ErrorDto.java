@@ -1,9 +1,9 @@
-package com.card.handler;
+package com.card.dto;
 
-public class ErrorResponse {
+public class ErrorDto {
     private String errorMessage;
 
-    public ErrorResponse(String errorMessage) {
+    public ErrorDto(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
