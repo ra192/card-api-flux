@@ -1,9 +1,11 @@
 package com.card.handler;
 
+import com.card.dto.CreateCustomerDto;
 import com.card.dto.ErrorDto;
 import com.card.entity.Customer;
 import com.card.service.CustomerService;
-import com.card.dto.CreateCustomerDto;
+import com.card.service.MerchantService;
+import com.card.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -16,12 +18,13 @@ import reactor.core.publisher.Mono;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 @Component
-public class CustomerHandler {
+public class CustomerHandler extends WithAuthMerchantHandler {
     private static final Logger logger = LoggerFactory.getLogger(CustomerHandler.class);
 
     private final CustomerService customerService;
 
-    public CustomerHandler(CustomerService customerService) {
+    public CustomerHandler(CustomerService customerService, TokenService tokenService, MerchantService merchantService) {
+        super(tokenService, merchantService);
         this.customerService = customerService;
     }
 
@@ -33,14 +36,16 @@ public class CustomerHandler {
     }
 
     public Mono<ServerResponse> create(ServerRequest request) {
-        return request.bodyToMono(CreateCustomerDto.class).doOnSuccess(it -> {
+        return validateToken(request).flatMap(merchant -> request.bodyToMono(CreateCustomerDto.class).doOnSuccess(it -> {
             logger.info("Create customer method was called with params:");
             logger.info(it.toString());
-        }).map(this::toCustomer).flatMap(customerService::create)
-                .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
+        }).map(this::toCustomer).flatMap(customer -> {
+            customer.setMerchantId(merchant.getId());
+            return customerService.create(customer);
+        }).flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
                 .doOnError(e -> logger.error(e.getMessage(), e))
                 .onErrorResume(e -> ok().contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(new ErrorDto(e.getMessage())));
+                        .bodyValue(new ErrorDto(e.getMessage()))));
     }
 
     private Customer toCustomer(CreateCustomerDto createCustomerDto) {

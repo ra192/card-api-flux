@@ -7,7 +7,6 @@ public class CreateCustomerDto {
     private String email;
     private String firstName;
     private String lastName;
-    private Long merchantId;
     private LocalDate birthDate;
     private String address;
     private String address2;
@@ -46,14 +45,6 @@ public class CreateCustomerDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public Long getMerchantId() {
-        return merchantId;
-    }
-
-    public void setMerchantId(Long merchantId) {
-        this.merchantId = merchantId;
     }
 
     public LocalDate getBirthDate() {
@@ -119,7 +110,6 @@ public class CreateCustomerDto {
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", merchantId=" + merchantId +
                 ", birthDate=" + birthDate +
                 ", address='" + address + '\'' +
                 ", address2='" + address2 + '\'' +

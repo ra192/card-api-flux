@@ -38,22 +38,24 @@ public class TokenService {
 
     public Mono<Token> create(Long merchantId, String secret) {
         return merchantService.getById(merchantId).flatMap(merchant -> {
+
             try {
                 if (!merchant.getSecret().equalsIgnoreCase(sha256Hash(secret)))
                     return Mono.error(() -> new TokenException("Secret is not valid"));
-
-                final var tokenStr = RandomStringUtils.randomAlphanumeric(tokenSize);
-                final var expiredAt = LocalDateTime.now().plusMinutes(tokenLifetimeInMinutes);
-
-                final var token = new Token(tokenStr, merchant.getId(), expiredAt);
-                cache.put(tokenStr, token);
-
-                logger.info("Token was created");
-
-                return Mono.just(token);
             } catch (NoSuchAlgorithmException e) {
                 return Mono.error(e);
             }
+
+            final var tokenStr = RandomStringUtils.randomAlphanumeric(tokenSize);
+            final var expiredAt = LocalDateTime.now().plusMinutes(tokenLifetimeInMinutes);
+
+            final var token = new Token(tokenStr, merchant.getId(), expiredAt);
+            cache.put(tokenStr, token);
+
+            logger.info("Token was created");
+
+            return Mono.just(token);
+
         });
     }
 
