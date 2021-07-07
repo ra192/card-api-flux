@@ -38,11 +38,9 @@ public class CustomerHandler {
             logger.info(it.toString());
         }).map(this::toCustomer).flatMap(customerService::create)
                 .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
-                .onErrorResume(e -> {
-                    logger.error(e.getMessage(), e);
-                    return ok().contentType(MediaType.APPLICATION_JSON)
-                            .bodyValue(new ErrorDto(e.getMessage()));
-                });
+                .doOnError(e -> logger.error(e.getMessage(), e))
+                .onErrorResume(e -> ok().contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new ErrorDto(e.getMessage())));
     }
 
     private Customer toCustomer(CreateCustomerDto createCustomerDto) {

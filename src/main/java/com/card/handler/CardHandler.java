@@ -42,6 +42,7 @@ public class CardHandler {
         })
                 .flatMap(it -> cardService.deposit(it.getCardId(), it.getAmount(), it.getOrderId()))
                 .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
+                .doOnError(e -> logger.error(e.getMessage(), e))
                 .onErrorResume(e -> ok().contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(new ErrorDto(e.getMessage())));
     }
