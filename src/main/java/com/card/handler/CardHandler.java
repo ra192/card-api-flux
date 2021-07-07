@@ -31,10 +31,6 @@ public class CardHandler {
                 .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res));
     }
 
-    private Card toCard(CreateCardDto createCardDto) {
-        return new Card(CardType.VIRTUAL, createCardDto.getCustomerId(), createCardDto.getAccountId());
-    }
-
     public Mono<ServerResponse> deposit(ServerRequest request) {
         return request.bodyToMono(CreateCardTransactionDto.class).doOnSuccess(it -> {
             logger.info("Deposit method was called with params:");
@@ -54,5 +50,9 @@ public class CardHandler {
         })
                 .flatMap(it -> cardService.withdraw(it.getCardId(), it.getAmount(), it.getOrderId()))
                 .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res));
+    }
+
+    private Card toCard(CreateCardDto createCardDto) {
+        return new Card(CardType.VIRTUAL, createCardDto.getCustomerId(), createCardDto.getAccountId());
     }
 }
