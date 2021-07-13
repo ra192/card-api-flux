@@ -6,11 +6,23 @@ import com.card.entity.TransactionItem;
 public class TransactionResultDto {
     private final Transaction transaction;
     private final TransactionItem baseItem;
-    private final TransactionItem feeIten;
+    private final TransactionItem feeItem;
 
-    public TransactionResultDto(Transaction transaction, TransactionItem baseItem, TransactionItem feeIten) {
+    public TransactionResultDto(Transaction transaction, TransactionItem baseItem, TransactionItem feeItem) {
         this.transaction = transaction;
         this.baseItem = baseItem;
-        this.feeIten = feeIten;
+        this.feeItem = feeItem;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public TransactionItem getBaseItem() {
+        return baseItem;
+    }
+
+    public TransactionItem getFeeItem() {
+        return feeItem;
     }
 }

@@ -4,7 +4,6 @@ import com.card.entity.enums.CardType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -22,12 +21,10 @@ public class Card {
     private String info;
 
     public Card(CardType type, Long customerId, Long accountId) {
-        this.providerReferenceId = providerReferenceId;
         this.type = type;
         this.customerId = customerId;
         this.accountId = accountId;
         this.created = LocalDateTime.now();
-        this.info = info;
     }
 
     public Long getId() {

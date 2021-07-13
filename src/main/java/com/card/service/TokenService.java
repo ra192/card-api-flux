@@ -56,7 +56,7 @@ public class TokenService {
         });
     }
 
-    public Long validate(String token) throws TokenException {
+    public Long validate(String token) {
 
         final var claimsJws = Jwts.parserBuilder().setSigningKey(getSecret()).build().parseClaimsJws(token);
 

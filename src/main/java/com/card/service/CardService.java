@@ -3,7 +3,6 @@ package com.card.service;
 import com.card.entity.Card;
 import com.card.entity.enums.TransactionType;
 import com.card.repository.CardRepository;
-import com.card.dto.CreateCardTransactionDto;
 import com.card.dto.TransactionResultDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
