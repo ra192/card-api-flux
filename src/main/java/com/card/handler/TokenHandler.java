@@ -2,6 +2,7 @@ package com.card.handler;
 
 import com.card.dto.CreateTokenDto;
 import com.card.dto.ErrorDto;
+import com.card.dto.TokenDto;
 import com.card.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class TokenHandler {
 
     public Mono<ServerResponse> create(ServerRequest request) {
         return request.bodyToMono(CreateTokenDto.class).flatMap(it -> tokenService.create(it.getMerchantId(), it.getSecret()))
-                .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
+                .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(new TokenDto(res)))
                 .doOnError(e -> logger.error(e.getMessage(), e))
                 .onErrorResume(e -> ok().contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(new ErrorDto(e.getMessage())));
