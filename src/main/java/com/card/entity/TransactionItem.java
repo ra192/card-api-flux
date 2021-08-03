@@ -1,6 +1,5 @@
 package com.card.entity;
 
-import com.card.entity.enums.TransactionItemType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -10,20 +9,20 @@ public class TransactionItem {
     @Id
     private Long id;
     private Long amount;
-    @Column("account_id")
-    private Long accountId;
+    @Column("src_account_id")
+    private Long srcAccountId;
+    @Column("dest_account_id")
+    private Long destAccountId;
     private LocalDateTime created;
-    private TransactionItemType type;
     @Column("card_id")
     private Long cardId;
     @Column("items_id")
     private Long transactionId;
 
-    public TransactionItem(Long amount, Long transactionId, Long accountId, TransactionItemType type, Long cardId) {
+    public TransactionItem(Long amount, Long transactionId, Long srcAccountId, Long destAccountId, Long cardId) {
         this.amount = amount;
-        this.accountId = accountId;
+        this.srcAccountId = srcAccountId;
         this.created = LocalDateTime.now();
-        this.type = type;
         this.cardId = cardId;
     }
 
@@ -43,12 +42,20 @@ public class TransactionItem {
         this.amount = amount;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Long getSrcAccountId() {
+        return srcAccountId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setSrcAccountId(Long srcAccountId) {
+        this.srcAccountId = srcAccountId;
+    }
+
+    public Long getDestAccountId() {
+        return destAccountId;
+    }
+
+    public void setDestAccountId(Long destAccountId) {
+        this.destAccountId = destAccountId;
     }
 
     public LocalDateTime getCreated() {
@@ -59,19 +66,15 @@ public class TransactionItem {
         this.created = created;
     }
 
-    public TransactionItemType getType() {
-        return type;
-    }
-
-    public void setType(TransactionItemType type) {
-        this.type = type;
-    }
-
     public Long getCardId() {
         return cardId;
     }
 
     public void setCardId(Long cardId) {
         this.cardId = cardId;
+    }
+
+    public Long getTransactionId() {
+        return transactionId;
     }
 }

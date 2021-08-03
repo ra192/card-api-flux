@@ -13,7 +13,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Mono<Account> getActiveById(Long id) {
+    public Mono<Account> findActiveById(Long id) {
         return accountRepository.findByIdAndActive(id, true);
     }
 }
