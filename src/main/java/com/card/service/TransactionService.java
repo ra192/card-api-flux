@@ -48,7 +48,8 @@ public class TransactionService {
             final var srcFeeAccountId = isDeposit ? destAccountId : srcAccountId;
             return transactionFeeRepository.findByTypeAndAccountId(type, srcFeeAccountId).flatMap(fee -> {
                 final var feeAmount = fee.getRate().longValue() * amount;
-                if (sum - feeAmount < 0)
+                final var srcTotalAmount = isDeposit ? amount : amount + feeAmount;
+                if (sum - srcTotalAmount < 0)
                     return Mono.error(new TransactionException("Account does not have enough funds"));
 
                 return transactionRepository.save(new Transaction(orderId, type, TransactionStatus.COMPLETED)).flatMap(trans ->
