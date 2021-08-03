@@ -25,49 +25,62 @@ public class TransactionService {
         this.transactionFeeRepository = transactionFeeRepository;
     }
 
-    public Mono<Transaction> deposit(Long srcAccountId, Long destAccountId, Long destFeeAccountId, Long amount,
+    public Mono<Transaction> deposit(Long srcAccountId, Long destAccountId, Long feeAccountId, Long amount,
                                      TransactionType type, String orderId, Long cardId) {
-        return createTransaction(srcAccountId, destAccountId, destFeeAccountId, amount, type,
-                orderId, cardId, true);
+        return sumByAccount(srcAccountId).flatMap(sum ->
+                calculateFee(amount, type, destAccountId).flatMap(feeAmount -> {
+                    if (sum - amount < 0)
+                        return Mono.error(new TransactionException("Account does not have enough funds"));
 
+                    final var transactionMono = createTransaction(srcAccountId, destAccountId, amount, type, orderId, cardId);
+                    if (feeAmount > 0)
+                        return transactionMono.flatMap(trans ->
+                                transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
+                                        destAccountId, feeAccountId, null)).map(it -> trans));
+                    else
+                        return transactionMono;
+
+                }));
     }
 
-    public Mono<Transaction> withdraw(Long srcAccountId, Long destAccountId, Long destFeeAccountId, Long amount,
+    public Mono<Transaction> fund(Long srcAccountId, Long destAccountId, Long amount, TransactionType type,
+                                  String orderId) {
+        return createTransaction(srcAccountId,destAccountId,amount,type,orderId,null);
+    }
+
+    public Mono<Transaction> withdraw(Long srcAccountId, Long destAccountId, Long feeAccountId, Long amount,
                                       TransactionType type, String orderId, Long cardId) {
-        return createTransaction(srcAccountId, destAccountId, destFeeAccountId, amount, type,
-                orderId, cardId, false);
+        return sumByAccount(srcAccountId).flatMap(sum ->
+                calculateFee(amount, type, srcAccountId).flatMap(feeAmount -> {
+                    if (sum - amount -feeAmount < 0)
+                        return Mono.error(new TransactionException("Account does not have enough funds"));
+
+                    final var transactionMono = createTransaction(srcAccountId, destAccountId, amount, type, orderId, cardId);
+                    if (feeAmount > 0)
+                        return transactionMono.flatMap(trans ->
+                                transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
+                                        srcAccountId, feeAccountId, null)).map(it -> trans));
+                    else
+                        return transactionMono;
+
+                }));
     }
 
-    private Mono<Transaction> createTransaction(Long srcAccountId, Long destAccountId, Long destFeeAccountId, Long amount, TransactionType type,
-                                                String orderId, Long cardId, boolean isDeposit) {
-        return sumByAccount(srcAccountId).flatMap(sum -> {
-            final var srcFeeAccountId = isDeposit ? destAccountId : srcAccountId;
-            return transactionFeeRepository.findByTypeAndAccountId(type, srcFeeAccountId).flatMap(fee -> {
-                final var feeAmount = fee.getRate().longValue() * amount;
-                final var srcTotalAmount = isDeposit ? amount : amount + feeAmount;
-                if (sum - srcTotalAmount < 0)
-                    return Mono.error(new TransactionException("Account does not have enough funds"));
-
-                return transactionRepository.save(new Transaction(orderId, type, TransactionStatus.COMPLETED)).flatMap(trans ->
-                        transactionItemRepository.save(new TransactionItem(amount, trans.getId(), srcAccountId,
-                                destAccountId, cardId)).flatMap(baseItm ->
-                                transactionItemRepository.save(
-                                        new TransactionItem(feeAmount, trans.getId(), srcFeeAccountId, destFeeAccountId,
-                                                null))).map(it -> trans));
-            }).switchIfEmpty(Mono.defer(() -> {
-                if (sum - amount < 0)
-                    return Mono.error(new TransactionException("Account does not have enough funds"));
-
-                return transactionRepository.save(new Transaction(orderId, type, TransactionStatus.COMPLETED)).flatMap(
-                        trans -> transactionItemRepository.save(new TransactionItem(amount, trans.getId(),
-                                srcAccountId, destAccountId, cardId)).map(it -> trans));
-            }));
-        });
+    private Mono<Transaction> createTransaction(Long srcAccountId, Long destAccountId, Long amount, TransactionType type,
+                                                String orderId, Long cardId) {
+        return transactionRepository.save(new Transaction(orderId, type, TransactionStatus.COMPLETED)).flatMap(trans ->
+                transactionItemRepository.save(new TransactionItem(amount, trans.getId(), srcAccountId,
+                        destAccountId, cardId)).map(it -> trans));
     }
 
     private Mono<Long> sumByAccount(Long accountId) {
         return transactionItemRepository.findSumAmountBySrcAccountId(accountId).defaultIfEmpty(0L)
                 .flatMap(srcAmount -> transactionItemRepository.findSumAmountByDestAccountId(accountId)
                         .defaultIfEmpty(0L).map(destAmount -> destAmount - srcAmount));
+    }
+
+    private Mono<Long> calculateFee(Long amount, TransactionType type, Long accountId) {
+        return transactionFeeRepository.findByTypeAndAccountId(type, accountId)
+                .map(fee -> amount * fee.getRate().longValue()).defaultIfEmpty(0L);
     }
 }

@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 public class CardService {
     private static final Logger logger = LoggerFactory.getLogger(CardService.class);
 
-    private static final Long CARD_ACCOUNT_ID = 1L;
-    private static final Long FEE_ACCOUNT_ID = 2L;
+    private static final Long CARD_ACCOUNT_ID = 2L;
+    private static final Long FEE_ACCOUNT_ID = 3L;
 
 
     private final CardRepository cardRepository;

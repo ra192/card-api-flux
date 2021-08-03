@@ -25,10 +25,7 @@ public class WithAuthMerchantHandler {
         logger.info("Authorization header: {}", authHeader);
         if (authHeader == null) return Mono.error(() -> new TokenException("Authorization header is not specified"));
         final var token = StringUtils.replace(authHeader, "Bearer", "").trim();
-        try {
-            return merchantService.getById(tokenService.validate(token));
-        } catch (TokenException e) {
-            return Mono.error(e);
-        }
+
+        return merchantService.getById(tokenService.validate(token));
     }
 }
