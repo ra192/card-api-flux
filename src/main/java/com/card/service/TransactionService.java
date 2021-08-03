@@ -8,15 +8,11 @@ import com.card.repository.TransactionFeeRepository;
 import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
 import com.card.service.exception.TransactionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 public class TransactionService {
-    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
-
     private final TransactionRepository transactionRepository;
     private final TransactionItemRepository transactionItemRepository;
     private final TransactionFeeRepository transactionFeeRepository;
