@@ -16,7 +16,7 @@ public class TransactionItem {
     private LocalDateTime created;
     @Column("card_id")
     private Long cardId;
-    @Column("items_id")
+    @Column("transaction_id")
     private Long transactionId;
 
     public TransactionItem(Long amount, Long transactionId, Long srcAccountId, Long destAccountId, Long cardId) {
