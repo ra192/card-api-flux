@@ -21,7 +21,9 @@ public class TransactionItem {
 
     public TransactionItem(Long amount, Long transactionId, Long srcAccountId, Long destAccountId, Long cardId) {
         this.amount = amount;
+        this.transactionId=transactionId;
         this.srcAccountId = srcAccountId;
+        this.destAccountId=destAccountId;
         this.created = LocalDateTime.now();
         this.cardId = cardId;
     }

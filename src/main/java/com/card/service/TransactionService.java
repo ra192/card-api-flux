@@ -62,7 +62,16 @@ public class TransactionService {
     }
 
     public Mono<Transaction> fund(Long accountId, Long amount, String orderId) {
-        return createTransaction(CASH_ACCOUNT_ID, accountId, amount, TransactionType.FUND, orderId, null);
+        return accountService.findActiveById(CASH_ACCOUNT_ID).zipWith(accountService.findActiveById(accountId)).flatMap(accs->{
+            final var srcAccount=accs.getT1();
+            final var destAccount = accs.getT2();
+
+            return createTransaction(CASH_ACCOUNT_ID, accountId, amount, TransactionType.FUND, orderId, null)
+                    .doOnSuccess(it->{
+                        updateBalance(srcAccount, -amount);
+                        updateBalance(destAccount, amount);
+                    });
+        });
     }
 
     public Mono<Transaction> withdraw(Long srcAccountId, Long destAccountId, Long feeAccountId, Long amount,
