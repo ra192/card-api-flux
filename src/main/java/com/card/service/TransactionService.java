@@ -5,6 +5,7 @@ import com.card.entity.Transaction;
 import com.card.entity.TransactionItem;
 import com.card.entity.enums.TransactionStatus;
 import com.card.entity.enums.TransactionType;
+import com.card.repository.AccountRepository;
 import com.card.repository.TransactionFeeRepository;
 import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
@@ -16,7 +17,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class TransactionService {
-    private static final Logger logger= LoggerFactory.getLogger(TransactionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionService.class);
 
     private static final Long CASH_ACCOUNT_ID = 1L;
 
@@ -70,12 +71,12 @@ public class TransactionService {
     }
 
     public Mono<Transaction> fund(Long accountId, Long amount, String orderId) {
-        return accountService.findActiveById(CASH_ACCOUNT_ID).zipWith(accountService.findActiveById(accountId)).flatMap(accs->{
-            final var srcAccount=accs.getT1();
+        return accountService.findActiveById(CASH_ACCOUNT_ID).zipWith(accountService.findActiveById(accountId)).flatMap(accs -> {
+            final var srcAccount = accs.getT1();
             final var destAccount = accs.getT2();
 
             return createTransaction(CASH_ACCOUNT_ID, accountId, amount, TransactionType.FUND, orderId, null)
-                    .doOnSuccess(it->{
+                    .doOnSuccess(it -> {
                         updateBalance(srcAccount, -amount);
                         updateBalance(destAccount, amount);
 
