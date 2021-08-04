@@ -25,6 +25,8 @@ public class Card {
         this.customerId = customerId;
         this.accountId = accountId;
         this.created = LocalDateTime.now();
+        this.providerReferenceId="xxxx";
+        this.info="xxxx";
     }
 
     public Long getId() {
