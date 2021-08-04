@@ -9,11 +9,15 @@ import com.card.repository.TransactionFeeRepository;
 import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
 import com.card.service.exception.TransactionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 @Service
 public class TransactionService {
+    private static final Logger logger= LoggerFactory.getLogger(TransactionService.class);
+
     private static final Long CASH_ACCOUNT_ID = 1L;
 
     private final TransactionRepository transactionRepository;
@@ -50,11 +54,15 @@ public class TransactionService {
                                 updateBalance(srcAccount, -amount);
                                 updateBalance(destAccount, amount - feeAmount);
                                 updateBalance(feeAccount, feeAmount);
+
+                                logger.info("Transaction {} was created", it.getType());
                             });
                         else {
                             return transactionMono.doOnSuccess(it -> {
                                 updateBalance(srcAccount, -amount);
                                 updateBalance(destAccount, amount);
+
+                                logger.info("Transaction {} was created", it.getType());
                             });
                         }
                     });
@@ -70,6 +78,8 @@ public class TransactionService {
                     .doOnSuccess(it->{
                         updateBalance(srcAccount, -amount);
                         updateBalance(destAccount, amount);
+
+                        logger.info("Transaction {} was created", it.getType());
                     });
         });
     }
@@ -95,11 +105,15 @@ public class TransactionService {
                                         updateBalance(srcAccount, -amount - feeAmount);
                                         updateBalance(destAccount, amount);
                                         updateBalance(feeAccount, feeAmount);
+
+                                        logger.info("Transaction {} was created", it.getType());
                                     });
                         else
                             return transactionMono.doOnSuccess(it -> {
                                 updateBalance(srcAccount, -amount);
                                 updateBalance(destAccount, amount);
+
+                                logger.info("Transaction {} was created", it.getType());
                             });
                     });
                 });
