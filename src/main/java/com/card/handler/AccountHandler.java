@@ -1,11 +1,11 @@
 package com.card.handler;
 
-import com.card.dto.CreateCardTransactionDto;
 import com.card.dto.ErrorDto;
 import com.card.dto.FundAccountDto;
 import com.card.service.AccountService;
 import com.card.service.MerchantService;
 import com.card.service.TokenService;
+import com.card.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -22,11 +22,11 @@ public class AccountHandler extends WithAuthMerchantHandler {
 
     private static final Long INTERNAL_MERCHANT_ID = 1L;
 
-    private final AccountService accountService;
+    private final TransactionService transactionService;
 
-    public AccountHandler(TokenService tokenService, MerchantService merchantService, AccountService accountService) {
+    public AccountHandler(TokenService tokenService, MerchantService merchantService, TransactionService transactionService) {
         super(tokenService, merchantService);
-        this.accountService = accountService;
+        this.transactionService = transactionService;
     }
 
     public Mono<ServerResponse> fund(ServerRequest request) {
@@ -38,7 +38,7 @@ public class AccountHandler extends WithAuthMerchantHandler {
                         logger.info("Fund method was called with params:");
                         logger.info(it.toString());
                     })
-                    .flatMap(it -> accountService.fund(it.getAccountId(), it.getAmount(), it.getOrderId()))
+                    .flatMap(it -> transactionService.fund(it.getAccountId(), it.getAmount(), it.getOrderId()))
                     .flatMap(res -> ok().contentType(MediaType.APPLICATION_JSON).bodyValue(res))
                     .doOnError(e -> logger.error(e.getMessage(), e))
                     .onErrorResume(e -> ok().contentType(MediaType.APPLICATION_JSON)
