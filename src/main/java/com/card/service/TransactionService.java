@@ -81,7 +81,7 @@ public class TransactionService {
                         if (feeAmount > 0)
                             return transactionMono.flatMap(trans ->
                                             transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
-                                                    destAccountId, feeAccountId, null)).map(it -> trans))
+                                                    srcAccountId, feeAccountId, null)).map(it -> trans))
                                     .doOnSuccess(it -> {
                                         updateBalance(srcAccount, -amount - feeAmount);
                                         updateBalance(destAccount, amount);
