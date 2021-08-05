@@ -11,7 +11,6 @@ public class Account {
     private String currency;
     @Column("merchant_id")
     private Long merchantId;
-    private Long balance;
 
     public Long getId() {
         return id;
@@ -51,13 +50,5 @@ public class Account {
 
     public void setMerchantId(Long merchantId) {
         this.merchantId = merchantId;
-    }
-
-    public Long getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Long balance) {
-        this.balance = balance;
     }
 }
