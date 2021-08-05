@@ -81,8 +81,8 @@ public class TransactionService {
     }
 
     private Mono<Long> sumByAccount(Long accountId) {
-        return transactionItemRepository.findSumAmountBySrcAccountId(accountId).defaultIfEmpty(0L)
-                .zipWith(transactionItemRepository.findSumAmountByDestAccountId(accountId).defaultIfEmpty(0L))
+        return transactionItemRepository.sumBySrcAccountId(accountId).defaultIfEmpty(0L)
+                .zipWith(transactionItemRepository.sumByDestAccountId(accountId).defaultIfEmpty(0L))
                 .map(res -> res.getT2() - res.getT1());
     }
 }
