@@ -17,7 +17,7 @@ public class AccountService {
         return accountRepository.findByIdAndActive(id, true);
     }
 
-    protected void save(Account account) {
-        accountRepository.save(account);
+    protected Mono<Account> save(Account account) {
+        return accountRepository.save(account);
     }
 }

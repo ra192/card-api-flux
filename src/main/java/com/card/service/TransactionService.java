@@ -5,7 +5,6 @@ import com.card.entity.Transaction;
 import com.card.entity.TransactionItem;
 import com.card.entity.enums.TransactionStatus;
 import com.card.entity.enums.TransactionType;
-import com.card.repository.AccountRepository;
 import com.card.repository.TransactionFeeRepository;
 import com.card.repository.TransactionItemRepository;
 import com.card.repository.TransactionRepository;
@@ -51,21 +50,21 @@ public class TransactionService {
                         if (feeAmount > 0)
                             return transactionMono.flatMap(trans ->
                                     transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
-                                            destAccountId, feeAccountId, null)).map(it -> trans)).doOnSuccess(it -> {
-                                updateBalance(srcAccount, -amount);
-                                updateBalance(destAccount, amount - feeAmount);
-                                updateBalance(feeAccount, feeAmount);
+                                            destAccountId, feeAccountId, null)).flatMap(feeItm ->
+                                            updateBalance(srcAccount, -amount)
+                                                    .zipWith(updateBalance(destAccount, amount - feeAmount))
+                                                    .zipWith(updateBalance(feeAccount, feeAmount)).map(it -> {
+                                                        logger.info("Transaction {} was created", trans.getType());
+                                                        return trans;
+                                                    })));
+                        else
+                            return transactionMono.flatMap(trans ->
+                                    updateBalance(srcAccount, -amount).zipWith(updateBalance(destAccount, amount))
+                                            .map(it -> {
+                                                logger.info("Transaction {} was created", trans.getType());
+                                                return trans;
+                                            }));
 
-                                logger.info("Transaction {} was created", it.getType());
-                            });
-                        else {
-                            return transactionMono.doOnSuccess(it -> {
-                                updateBalance(srcAccount, -amount);
-                                updateBalance(destAccount, amount);
-
-                                logger.info("Transaction {} was created", it.getType());
-                            });
-                        }
                     });
                 });
     }
@@ -76,12 +75,11 @@ public class TransactionService {
             final var destAccount = accs.getT2();
 
             return createTransaction(CASH_ACCOUNT_ID, accountId, amount, TransactionType.FUND, orderId, null)
-                    .doOnSuccess(it -> {
-                        updateBalance(srcAccount, -amount);
-                        updateBalance(destAccount, amount);
-
-                        logger.info("Transaction {} was created", it.getType());
-                    });
+                    .flatMap(trans -> updateBalance(srcAccount, -amount).zipWith(updateBalance(destAccount, amount))
+                            .map(it -> {
+                                logger.info("Transaction {} was created", trans.getType());
+                                return trans;
+                            }));
         });
     }
 
@@ -100,22 +98,20 @@ public class TransactionService {
                         final var transactionMono = createTransaction(srcAccountId, destAccountId, amount, type, orderId, cardId);
                         if (feeAmount > 0)
                             return transactionMono.flatMap(trans ->
-                                            transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
-                                                    srcAccountId, feeAccountId, null)).map(it -> trans))
-                                    .doOnSuccess(it -> {
-                                        updateBalance(srcAccount, -amount - feeAmount);
-                                        updateBalance(destAccount, amount);
-                                        updateBalance(feeAccount, feeAmount);
-
-                                        logger.info("Transaction {} was created", it.getType());
-                                    });
+                                    transactionItemRepository.save(new TransactionItem(feeAmount, trans.getId(),
+                                            srcAccountId, feeAccountId, null)).flatMap(feeItm ->
+                                            updateBalance(srcAccount, -amount - feeAmount)
+                                                    .zipWith(updateBalance(destAccount, amount))
+                                                    .zipWith(updateBalance(feeAccount, feeAmount)).map(it -> {
+                                                        logger.info("Transaction {} was created", trans.getType());
+                                                        return trans;
+                                                    })));
                         else
-                            return transactionMono.doOnSuccess(it -> {
-                                updateBalance(srcAccount, -amount);
-                                updateBalance(destAccount, amount);
-
-                                logger.info("Transaction {} was created", it.getType());
-                            });
+                            return transactionMono.flatMap(trans ->
+                                    updateBalance(srcAccount, -amount).zipWith(updateBalance(destAccount, amount)).map(it -> {
+                                        logger.info("Transaction {} was created", trans.getType());
+                                        return trans;
+                                    }));
                     });
                 });
     }
@@ -132,8 +128,8 @@ public class TransactionService {
                 .map(fee -> amount * fee.getRate().longValue()).defaultIfEmpty(0L);
     }
 
-    private void updateBalance(Account account, Long amount) {
+    private Mono<Account> updateBalance(Account account, Long amount) {
         account.setBalance(account.getBalance() + amount);
-        accountService.save(account);
+        return accountService.save(account);
     }
 }
