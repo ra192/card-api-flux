@@ -1,6 +1,5 @@
 package com.card.service;
 
-import com.card.entity.Account;
 import com.card.entity.Transaction;
 import com.card.entity.TransactionItem;
 import com.card.entity.enums.TransactionStatus;
