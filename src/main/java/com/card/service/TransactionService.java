@@ -22,15 +22,13 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionItemRepository transactionItemRepository;
     private final TransactionFeeRepository transactionFeeRepository;
-    private final AccountService accountService;
 
     public TransactionService(TransactionRepository transactionRepository,
                               TransactionItemRepository transactionItemRepository,
-                              TransactionFeeRepository transactionFeeRepository, AccountService accountService) {
+                              TransactionFeeRepository transactionFeeRepository) {
         this.transactionRepository = transactionRepository;
         this.transactionItemRepository = transactionItemRepository;
         this.transactionFeeRepository = transactionFeeRepository;
-        this.accountService = accountService;
     }
 
     public Mono<Transaction> deposit(Long srcAccountId, Long destAccountId, Long feeAccountId, Long amount,
